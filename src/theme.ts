@@ -37,10 +37,29 @@ export const semanticTokens = {
   },
 };
 
+export const commonStyles = {
+  components: {
+    Button: {
+      variants: {
+        primary: {
+          bg: "#1F2133",
+          borderRadius: "4px",
+          border: "1px solid",
+          borderColor: "#26293F",
+        },
+      },
+      defaultProps: {
+        variant: "primary",
+      },
+    },
+  },
+};
+
 export const getCustomTheme = async () => {
   return extendTheme({
     colors: themeColors,
     styles,
     semanticTokens: semanticTokens,
+    ...commonStyles,
   });
 };

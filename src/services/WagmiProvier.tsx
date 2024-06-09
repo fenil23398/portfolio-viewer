@@ -25,7 +25,7 @@ interface WagmiProviersProps {
   children: ReactNode;
 }
 
-const ALCHEMY_ARBITRUM_KEY = "sJHV-fI60BWPJvFtqT-Dbnazdz6cKHTa";
+const ALCHEMY_ARBITRUM_KEY = "veX7Dv3RnELcZyxBDrs5Ds-bdUBTr8Ua";
 
 const WC_PROJECT_ID = "3c159dabe97c66fb7905025bb66feb9a" as string;
 const queryClient = new QueryClient();
@@ -90,7 +90,7 @@ export const wagmiConfig = createConfig({
 
 const WagmiProvier = ({ children }: WagmiProviersProps) => {
   const defaultTheme = lightTheme({
-    accentColor: "#3F6870",
+    accentColor: "#9195BB",
     fontStack: "system",
     overlayBlur: "small",
   });
@@ -107,8 +107,10 @@ const WagmiProvier = ({ children }: WagmiProviersProps) => {
               ...defaultTheme,
               colors: {
                 ...defaultTheme.colors,
-                modalBackground: "#E4F8F8",
-                modalText: "#3F6870",
+                modalBackground: "#1F2133",
+                modalText: "#F8F8FC",
+                modalTextSecondary: "#9195BB",
+                closeButton: "#A5A9C8",
               },
             }}
           >

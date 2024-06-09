@@ -1,11 +1,7 @@
-import { useMemo, useState } from "react";
+import { useMemo } from "react";
 
 import { TokenBalances } from "src/constants";
-import {
-  formatNumber,
-  IIndexableNumber,
-  toFixedWithoutRounding,
-} from "src/utils";
+import { IIndexableNumber, toFixedWithoutRounding } from "src/utils";
 import { formatUnits } from "viem";
 import { arbitrum, optimism } from "viem/chains";
 import useDappConfig from "./useDappConfig";
@@ -15,7 +11,6 @@ import useTokenBalance from "./useTokenBalance";
 import { useAccount } from "wagmi";
 
 const useBalanceHook = () => {
-  const [totalBalance, setTotalBalance] = useState(0);
   const hyperLiquidBalances = useHyperLiquidBalance();
 
   const { tokensList, supportedTokens } = useDappConfig();
@@ -27,21 +22,22 @@ const useBalanceHook = () => {
   const prices = usePrices();
 
   const balances: Array<TokenBalances> = useMemo(() => {
-    const balanceData: Array<TokenBalances> = tokensBalances
-      ? tokensBalances.map((res: any, index: number) => {
-          const balance = res.result! as unknown as bigint;
+    const balanceData: Array<TokenBalances> =
+      tokensBalances?.length > 0 && activeConnector
+        ? tokensBalances.map((res: any, index: number) => {
+            const balance = res.result! as unknown as bigint;
 
-          const normalizedBalance = +toFixedWithoutRounding(
-            balance ? formatUnits(balance, tokensList[index].decimals) : "0",
-            8
-          );
-          return {
-            ...tokensList[index],
-            balance: normalizedBalance,
-            source: "",
-          };
-        })
-      : [];
+            const normalizedBalance = +toFixedWithoutRounding(
+              balance ? formatUnits(balance, tokensList[index].decimals) : "0",
+              8
+            );
+            return {
+              ...tokensList[index],
+              balance: normalizedBalance,
+              source: "",
+            };
+          })
+        : [];
 
     if (nativeOPBalance) {
       balanceData.push({
@@ -73,7 +69,13 @@ const useBalanceHook = () => {
       });
     }
     return balanceData;
-  }, [tokensBalances, nativeARBBalance, nativeOPBalance, hyperLiquidBalances]);
+  }, [
+    tokensBalances,
+    nativeARBBalance,
+    nativeOPBalance,
+    hyperLiquidBalances,
+    activeConnector,
+  ]);
 
   const balanceNormalizedData = useMemo(() => {
     if (balances?.length > 0 && prices) {
@@ -93,7 +95,7 @@ const useBalanceHook = () => {
             marketValue: mValue,
           };
         });
-      setTotalBalance(totalMarketValue);
+
       return balanceDetails.map((data) => {
         const perc = (data.marketValue * 100) / totalMarketValue;
         return {
@@ -124,6 +126,15 @@ const useBalanceHook = () => {
     }
     return chainsBalance;
   }, [balanceNormalizedData]);
+
+  const totalBalance = useMemo(() => {
+    let totalmValue = 0;
+    if (balanceNormalizedData?.length > 0)
+      balanceNormalizedData.forEach(
+        (data) => (totalmValue += data.marketValue)
+      );
+    return totalmValue;
+  }, [activeConnector, balanceNormalizedData]);
 
   return {
     balanceNormalizedData,

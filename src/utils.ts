@@ -48,6 +48,7 @@ export const chainIconMapping: IIndexable = {
 export const chainNameMapping: IIndexable = {
   [arbitrum.id]: "Arbitrum",
   [optimism.id]: "Optimism",
+  hyperliquid: "Hyperliquid",
 };
 
 export const toFixedWithoutRounding = (value: string, decimals: number) =>

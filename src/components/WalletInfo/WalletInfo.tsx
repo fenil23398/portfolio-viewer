@@ -12,14 +12,15 @@ import Image from "next/image";
 import { toast } from "react-toastify";
 import { shortenAddress, copyToClipboard, formatNumber } from "src/utils";
 import { useDisconnect, useAccount } from "wagmi";
-import useBalanceHook from "src/hooks/useBalance";
 
-const WalletInfo = () => {
+interface WalletInfoProps {
+  userBalance: number;
+}
+
+const WalletInfo = ({ userBalance }: WalletInfoProps) => {
   const { disconnect } = useDisconnect();
 
   const { address: walletAddress, connector: activeConnector } = useAccount();
-
-  const { totalBalance } = useBalanceHook();
 
   const walletIcon =
     activeConnector && activeConnector.icon
@@ -58,7 +59,7 @@ const WalletInfo = () => {
                 fontSize="12px"
                 lineHeight="28px"
               >
-                {formatNumber(totalBalance, false, 2)}
+                {formatNumber(userBalance, false, 2)}
               </Text>
             </Center>
           </Button>

@@ -2,6 +2,7 @@ import { Flex, Text } from "@chakra-ui/react";
 import Image from "next/image";
 import { useState } from "react";
 import { headerData } from "src/constants";
+import useBalanceHook from "src/hooks/useBalance";
 import { useAccount } from "wagmi";
 import Connect from "../Connect";
 import Disconnect from "../Disconnect";
@@ -10,6 +11,8 @@ import WalletInfo from "../WalletInfo";
 const Header = () => {
   const { address: walletAddress } = useAccount();
   const [selectedTabIndex, setSelectedTabIndex] = useState(1);
+  const { totalBalance } = useBalanceHook();
+
   return (
     <Flex
       w="100%"
@@ -56,7 +59,7 @@ const Header = () => {
         <Connect />
       ) : (
         <Flex gap="8px">
-          <WalletInfo />
+          <WalletInfo userBalance={totalBalance} />
           <Disconnect />
         </Flex>
       )}
