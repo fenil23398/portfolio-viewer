@@ -26,20 +26,24 @@ const usePrices = () => {
   const { address: walletAddress } = useAccount();
 
   const getPrices = async () => {
-    const data = await axios.get(
-      "https://api.coingecko.com/api/v3/simple/price?ids=usd-coin,tether,wrapped-bitcoin,ethereum,chainlink,uniswap,arbitrum&vs_currencies=usd"
-    );
-    const priceData = data?.data;
-    priceData &&
-      setPrices({
-        [usdt]: priceData["tether"].usd,
-        [usdc]: priceData["usd-coin"].usd,
-        [wBTC]: priceData["wrapped-bitcoin"].usd,
-        [eth]: priceData["ethereum"].usd,
-        [link]: priceData["chainlink"].usd,
-        [uni]: priceData["uniswap"].usd,
-        [arb]: priceData["arbitrum"].usd,
-      });
+    try {
+      const data = await axios.get(
+        "https://api.coingecko.com/api/v3/simple/price?ids=usd-coin,tether,wrapped-bitcoin,ethereum,chainlink,uniswap,arbitrum&vs_currencies=usd"
+      );
+      const priceData = data?.data;
+      priceData &&
+        setPrices({
+          [usdt]: priceData["tether"].usd,
+          [usdc]: priceData["usd-coin"].usd,
+          [wBTC]: priceData["wrapped-bitcoin"].usd,
+          [eth]: priceData["ethereum"].usd,
+          [link]: priceData["chainlink"].usd,
+          [uni]: priceData["uniswap"].usd,
+          [arb]: priceData["arbitrum"].usd,
+        });
+    } catch (error) {
+      console.log("Price API Error", error);
+    }
   };
 
   useEffect(() => {

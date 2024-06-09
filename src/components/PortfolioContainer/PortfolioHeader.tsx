@@ -9,6 +9,7 @@ import {
 import { useMemo } from "react";
 import BalanceDetail from "../BalanceDetail";
 import useDappConfig from "src/hooks/useDappConfig";
+import { BalanceDetailProps } from "../BalanceDetail/BalanceDetail";
 
 interface PortfolioHeaderProps {
   balanceChainsData: IIndexableNumber;
@@ -23,24 +24,23 @@ const PortfolioHeader = ({
   const { supportedChains } = useDappConfig();
 
   const balanceTotalDetails = useMemo(() => {
-    if (
-      walletAddress &&
-      connector &&
-      Object.keys(balanceChainsData).length > 0
-    ) {
+    if (walletAddress && connector) {
       let totalBalanceWallet = 0;
+      let data: Array<BalanceDetailProps> = [];
 
-      const data = Object.keys(balanceChainsData).map((key) => {
-        if (supportedChains.includes(key)) {
-          totalBalanceWallet += balanceChainsData[key];
-        }
+      if (Object.keys(balanceChainsData).length > 0) {
+        data = Object.keys(balanceChainsData).map((key) => {
+          if (supportedChains.includes(key)) {
+            totalBalanceWallet += balanceChainsData[key];
+          }
 
-        return {
-          title: chainNameMapping[key],
-          balance: balanceChainsData[key],
-          imgKey: chainIconMapping[key],
-        };
-      });
+          return {
+            title: chainNameMapping[key],
+            balance: balanceChainsData[key],
+            imgKey: chainIconMapping[key],
+          };
+        });
+      }
 
       data.unshift({
         title: connector.name,
@@ -53,6 +53,7 @@ const PortfolioHeader = ({
         balance: userBalance,
         imgKey: "/assets/user.svg",
       });
+
       return data;
     }
     return [];

@@ -40,7 +40,12 @@ const WalletInfo = () => {
             border="1px solid"
             borderColor="#26293F"
           >
-            <Center gap="8px" flexDir="row">
+            <Center
+              gap="8px"
+              flexDir="row"
+              w="100%"
+              justifyContent="flex-start"
+            >
               <Image
                 src="/assets/user.svg"
                 height="14"

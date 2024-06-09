@@ -2,7 +2,7 @@ import { Flex, Text } from "@chakra-ui/react";
 import Image from "next/image";
 import { formatNumber } from "src/utils";
 
-interface BalanceDetailProps {
+export interface BalanceDetailProps {
   imgKey: string;
   balance: number;
   title: string;
