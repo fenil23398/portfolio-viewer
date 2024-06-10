@@ -8,7 +8,7 @@ import PortfolioContainer from "../PortfolioContainer";
 import Sidebar from "../Sidebar";
 
 const PageLayout = () => {
-  const { address, isConnecting } = useAccount();
+  const { isConnecting } = useAccount();
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -21,7 +21,9 @@ const PageLayout = () => {
     <Center flexDir="column">
       <ToastContainer />
       {loading ? (
-        <Spinner />
+        <Center h="100vh">
+          <Spinner color="#1F2133" width="2rem" height="2rem" />
+        </Center>
       ) : (
         <>
           <Header />

@@ -24,6 +24,7 @@ export const link = "LINK";
 export const eth = "ETH";
 export const uni = "UNI";
 export const arb = "ARB";
+export const weth = "WETH";
 
 export const supportedTokens: ConfigMap = {
   [optimism.id]: {
@@ -59,6 +60,11 @@ export const supportedTokens: ConfigMap = {
         symbol: uni,
         decimals: 18,
         address: "0x6fd9d7AD17242c41f7131d257212c54A0e816691",
+      },
+      {
+        symbol: weth,
+        decimals: 18,
+        address: "0x4200000000000000000000000000000000000006",
       },
     ],
   },
@@ -100,6 +106,11 @@ export const supportedTokens: ConfigMap = {
         symbol: arb,
         decimals: 18,
         address: "0x912CE59144191C1204E64559FE8253a0e49E6548",
+      },
+      {
+        symbol: weth,
+        decimals: 18,
+        address: "0x82af49447d8a07e3bd95bd0d56f35241523fbab1",
       },
     ],
   },

@@ -1,5 +1,5 @@
 import { arbitrum, optimism } from "viem/chains";
-import { arb, eth, uni, usdc, usdt, wBTC, link } from "./config";
+import { arb, eth, uni, usdc, usdt, wBTC, link, weth } from "./config";
 
 export const copyToClipboard = (value: any) =>
   navigator.clipboard.writeText(value);
@@ -37,6 +37,7 @@ export const coinsIconMapping: IIndexable = {
   [uni]: "/assets/coins/uni.svg",
   [arb]: "/assets/coins/arb.svg",
   [link]: "/assets//coins/link.svg",
+  [weth]: "/assets/coins/weth.svg",
 };
 
 export const chainIconMapping: IIndexable = {

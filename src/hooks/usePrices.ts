@@ -1,64 +1,59 @@
-import axios from "axios";
 import { useEffect, useState } from "react";
-import { useIdle, useInterval } from "react-use";
-import { eth, usdc, usdt, wBTC, link, uni, arb } from "src/config";
+import { useIdle } from "react-use";
+import { fetchPrices } from "src/app/services";
+import { eth, usdc, usdt, wBTC, link, uni, arb, weth } from "src/config";
 import { useAccount } from "wagmi";
+import { useQuery } from "@tanstack/react-query";
 
 type prices = {
   [key: string]: string;
 };
 
+// Sould be empty but fixing to default value as Coingecko APIs failing
 const initialData: prices = {
-  [usdt]: "",
-  [usdc]: "",
-  [wBTC]: "",
-  [eth]: "",
-  [link]: "",
+  [usdt]: "1",
+  [usdc]: "1.001",
+  [wBTC]: "69918",
+  [eth]: "3697.54",
+  [link]: "16.1",
+  [uni]: "10.42",
+  [arb]: "0.977205",
 };
 
-const POLLING_INTERVAL = 20000;
+const POLLING_INTERVAL = 50000;
 
 const usePrices = () => {
   const [prices, setPrices] = useState<typeof initialData | undefined>(
-    undefined
+    initialData
   );
   const isIdle = useIdle(150e3);
   const { address: walletAddress } = useAccount();
 
-  const getPrices = async () => {
-    try {
-      const data = await axios.get(
-        "https://api.coingecko.com/api/v3/simple/price?ids=usd-coin,tether,wrapped-bitcoin,ethereum,chainlink,uniswap,arbitrum&vs_currencies=usd"
-      );
-      const priceData = data?.data;
-      priceData &&
-        setPrices({
-          [usdt]: priceData["tether"].usd,
-          [usdc]: priceData["usd-coin"].usd,
-          [wBTC]: priceData["wrapped-bitcoin"].usd,
-          [eth]: priceData["ethereum"].usd,
-          [link]: priceData["chainlink"].usd,
-          [uni]: priceData["uniswap"].usd,
-          [arb]: priceData["arbitrum"].usd,
-        });
-    } catch (error) {
-      console.log("Price API Error", error);
-    }
-  };
+  const { data: priceData } = useQuery({
+    queryKey: ["prices"],
+    queryFn: async () => {
+      const r = await fetchPrices();
+      return r.data;
+    },
+    enabled: !isIdle && walletAddress !== undefined,
+    refetchInterval: POLLING_INTERVAL,
+  });
 
   useEffect(() => {
-    if (walletAddress) {
-      getPrices();
-    }
-  }, [walletAddress]);
+    priceData &&
+      setPrices({
+        [usdt]: priceData["tether"].usd,
+        [usdc]: priceData["usd-coin"].usd,
+        [wBTC]: priceData["wrapped-bitcoin"].usd,
+        [eth]: priceData["ethereum"].usd,
+        [link]: priceData["chainlink"].usd,
+        [uni]: priceData["uniswap"].usd,
+        [arb]: priceData["arbitrum"].usd,
+        [weth]: priceData["ethereum"].usd,
+      });
+  }, [priceData]);
 
-  useInterval(() => {
-    if (!isIdle && walletAddress) {
-      getPrices();
-    }
-  }, POLLING_INTERVAL);
-
-  return prices;
+  return prices || initialData;
 };
 
 export default usePrices;
