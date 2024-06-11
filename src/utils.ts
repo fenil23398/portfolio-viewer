@@ -1,3 +1,4 @@
+import { UserRejectedRequestError } from "viem";
 import { arbitrum, optimism } from "viem/chains";
 import { arb, eth, uni, usdc, usdt, wBTC, link, weth } from "./config";
 
@@ -87,4 +88,28 @@ export const formatNumber = (
     minimumFractionDigits: 0,
     maximumFractionDigits: maxFractionDigits,
   });
+};
+
+export function isErrorRejectedByUser(error: any) {
+  const errorMessage = error ? JSON.stringify(error) : "";
+  const isrejectedError = [
+    "metamask tx signature: user denied transaction signature.",
+    "tx signature: user denied transaction signature.",
+    "user rejected",
+    "user rejected the transaction",
+    "User canceled",
+    "transaction declined",
+  ].some((errMessage) => errorMessage.toLowerCase().includes(errMessage));
+  return error instanceof UserRejectedRequestError || isrejectedError;
+}
+
+export const isNumber = (str: string) => {
+  if (str.trim() === "") {
+    return false;
+  }
+  return !isNaN(+str);
+};
+
+export const isValidEthereumAddress = (address: string) => {
+  return /^0x[a-fA-F0-9]{40}$/.test(address);
 };

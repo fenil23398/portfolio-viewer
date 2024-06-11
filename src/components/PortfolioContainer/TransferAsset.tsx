@@ -14,14 +14,18 @@ import {
 import { useRef, useState } from "react";
 import { erc20Abi, Hash, parseEther, parseUnits, Address } from "viem";
 import {
-  useWalletClient,
   useSendTransaction,
   useChainId,
   useSwitchChain,
+  useWriteContract,
 } from "wagmi";
 import { toast } from "react-toastify";
-import { toggleToast } from "react-toastify/dist/core/store";
-// import { waitForTransactionReceipt } from "viem/actions";
+import {
+  isErrorRejectedByUser,
+  isNumber,
+  isValidEthereumAddress,
+} from "src/utils";
+import { MAX_FRACTION_DIGITS } from "src/constants";
 
 interface TransferAssetProps {
   balance: number;
@@ -41,7 +45,7 @@ const TransferAsset = ({
   const [walletAddress, setWalletAddress] = useState("");
   const [amount, setAmount] = useState("");
   const { sendTransaction } = useSendTransaction();
-  const { data: signer } = useWalletClient();
+  const { writeContract } = useWriteContract();
 
   const { isOpen, onToggle, onClose } = useDisclosure();
   const popoverRef = useRef(null);
@@ -51,6 +55,19 @@ const TransferAsset = ({
   });
   const chainId = useChainId();
   const { switchChain } = useSwitchChain();
+
+  const handleChange = (value: string) => {
+    const val = value.trim().replace(/,/g, "");
+    if (isNumber(val) || val === "") {
+      if (val.indexOf(".") === -1) {
+        setAmount(val);
+      } else {
+        if (val.length - (val.indexOf(".") + 1) <= MAX_FRACTION_DIGITS) {
+          setAmount(val === "." ? "0." : val);
+        }
+      }
+    }
+  };
 
   const showError = (error: string) => {
     toast.error(error, {
@@ -68,10 +85,12 @@ const TransferAsset = ({
       showError("Enter valid Input");
       return;
     }
-    if (/^-?\d+(\.\d+)?$/.test(amount)) {
-      showError("Enter valid amount");
+
+    if (!isValidEthereumAddress(walletAddress)) {
+      showError("Enter valid wallet address");
       return;
     }
+
     if (Number(amount) > balance) {
       showError("Amount exceeds balance");
       return;
@@ -94,7 +113,11 @@ const TransferAsset = ({
           },
           {
             onError(error: any) {
-              showError(error?.message ?? "Transaction Failed");
+              showError(
+                isErrorRejectedByUser(error)
+                  ? "Rejected by user"
+                  : error?.message ?? "Transaction Failed"
+              );
 
               onToggle();
             },
@@ -112,31 +135,35 @@ const TransferAsset = ({
           }
         );
       } else {
-        await signer?.writeContract(
+        console.log("***** Here ");
+        writeContract(
           {
             address: tokenAddress,
             abi: erc20Abi,
             functionName: "transfer",
             args: [walletAddress as Hash, parseUnits(amount, decimals ?? 18)],
+          },
+          {
+            onError(error: any) {
+              showError(
+                isErrorRejectedByUser(error)
+                  ? "Rejected by user"
+                  : error?.message ?? "Transaction Failed"
+              );
+              onToggle();
+            },
+            onSuccess(data: string) {
+              toast.success(`Transaction Successful ${data}`, {
+                position: "top-right",
+                autoClose: 3000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                theme: "light",
+              });
+              onToggle();
+            },
           }
-          // {
-          //   onError(error: any) {
-          //     showError(error?.message ?? "Transaction Failed");
-
-          //     onToggle();
-          //   },
-          //   onSuccess(data: string) {
-          //     toast.success(`Transaction Successful ${data}`, {
-          //       position: "top-right",
-          //       autoClose: 3000,
-          //       hideProgressBar: false,
-          //       closeOnClick: true,
-          //       pauseOnHover: true,
-          //       theme: "light",
-          //     });
-          //     onToggle();
-          //   },
-          // }
         );
       }
     } catch (error: any) {
@@ -195,7 +222,7 @@ const TransferAsset = ({
                     color="darkslategrey"
                     value={amount}
                     //   isInvalid={!!error}
-                    onChange={(e) => setAmount(e.target.value)}
+                    onChange={(e) => handleChange(e.target.value)}
                     //   borderColor={error ? "error" : "inherit"}
 
                     //   disabled={disabled}

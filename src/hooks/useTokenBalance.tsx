@@ -25,7 +25,7 @@ const useTokenBalance = () => {
       }),
     query: {
       enabled: !isIdle && !!walletAddress,
-      refetchInterval: 5_0000,
+      refetchInterval: 1_0000,
     },
   });
 
@@ -34,7 +34,7 @@ const useTokenBalance = () => {
     chainId: arbitrum.id,
     query: {
       enabled: !isIdle && !!walletAddress,
-      refetchInterval: 5_0000,
+      refetchInterval: 1_0000,
       initialData: {
         decimals: 18,
         formatted: "0",
@@ -49,7 +49,7 @@ const useTokenBalance = () => {
     chainId: optimism.id,
     query: {
       enabled: !isIdle && !!walletAddress,
-      refetchInterval: 5_0000,
+      refetchInterval: 1_0000,
       initialData: {
         decimals: 18,
         formatted: "0",

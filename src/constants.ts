@@ -96,3 +96,5 @@ export type HyperLiquidBalanceType = {
   coin: string;
   total: string;
 };
+
+export const MAX_FRACTION_DIGITS = 4;
