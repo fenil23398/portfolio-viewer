@@ -69,6 +69,7 @@ const useBalanceHook = () => {
           balance: Number(data.total),
           symbol: data.coin,
           source: "hyperliquid",
+          chainId: "hyperliquid",
         });
       });
     }
